@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// The plan: create a string of each row and column, then use a regex to verify them
 func correctNonogram(size int, nonogramField [][]string) bool {
 	gridStart := (size + 1) / 2
 
