@@ -1,7 +1,7 @@
 package sortingoutpost
 
 import (
-	"fmt"
+	"sort"
 )
 
 type box struct {
@@ -9,6 +9,12 @@ type box struct {
 	w int
 	h int
 }
+
+type boxSort []box
+
+func (b boxSort) Len() int           { return len(b) }
+func (b boxSort) Less(i, j int) bool { return volume(b[i]) < volume(b[j]) }
+func (b boxSort) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 
 func boxesPacking(length []int, width []int, height []int) bool {
 	if len(length) == 1 {
@@ -21,24 +27,20 @@ func boxesPacking(length []int, width []int, height []int) bool {
 		boxes = append(boxes, box{length[i], width[i], height[i]})
 	}
 
-	fmt.Println("boxes", boxes)
-
-	// Take a box, and search the rest of the boxes for one that fits.
-	// Recursive?
+	// Sort by volume
+	sort.Sort(boxSort(boxes))
 
 	return boxFits(boxes[0], boxes[1:])
 }
 
+// Check if `b` fits in any of the boxes
 func boxFits(b box, boxes []box) bool {
 	if len(boxes) == 0 {
 		return true
 	}
 
-	// Find if there's a box that fits
-	// If no boxes fit, return false
-	// Else, remove that box and run the func again
-
 	/*
+		{l w h}
 		Example: {2 4 2} {4 3 5}
 		Turning {2 4 2} to {2 2 4} would work
 
@@ -49,19 +51,43 @@ func boxFits(b box, boxes []box) bool {
 	*/
 
 	var doesFit bool
-	for i, bx := range boxes {
-		doesFit = fits(bx, b)
+	for i, outer := range boxes {
+		doesFit = fits(b, outer)
 
+		// Flip x
 		if !doesFit {
+			doesFit = fits(box{b.l, b.h, b.w}, outer)
+		}
 
-			// Flip and try again
-			// TODO
+		// Flip y
+		if !doesFit {
+			doesFit = fits(box{b.h, b.w, b.l}, outer)
+		}
+
+		// Flip z
+		if !doesFit {
+			doesFit = fits(box{b.w, b.l, b.h}, outer)
+		}
+
+		// Flip x & y
+		if !doesFit {
+			doesFit = fits(box{b.w, b.h, b.l}, outer)
+		}
+
+		// Flip x & z
+		if !doesFit {
+			doesFit = fits(box{b.h, b.l, b.w}, outer)
+		}
+
+		// Flip y & z
+		if !doesFit {
+			doesFit = fits(box{b.w, b.h, b.l}, outer)
 		}
 
 		if doesFit {
-			// Remove bx from boxes
+			// Remove outer from boxes
 			boxes = append(boxes[:i], boxes[i+1:]...)
-			return boxFits(bx, boxes)
+			return boxFits(outer, boxes)
 		}
 
 		return false
@@ -70,6 +96,10 @@ func boxFits(b box, boxes []box) bool {
 	return false
 }
 
-func fits(b1 box, b2 box) bool {
-	return b1.l < b2.l && b1.w < b2.w && b1.h < b2.h
+func fits(inner box, outer box) bool {
+	return inner.l < outer.l && inner.w < outer.w && inner.h < outer.h
+}
+
+func volume(b box) int {
+	return b.l * b.w * b.h
 }
