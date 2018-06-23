@@ -7,13 +7,8 @@ import (
 
 func programTranslation(solution string, args []string) string {
 	argumentVariants := strings.Join(args, "|")
-
-	// fmt.Println("argumentVariants", argumentVariants)
-
-	// return ""
-
-	re := regexp.MustCompile("([^\\$a-zA-Z])(" + argumentVariants + ")(\\W)")
+	re := regexp.MustCompile(`([^$a-zA-Z_])(` + argumentVariants + `)(\W)`)
 	repl := "$1$$$2$3"
-	subSolution := solution
+	subSolution := re.ReplaceAllString(solution, repl)
 	return re.ReplaceAllString(subSolution, repl)
 }

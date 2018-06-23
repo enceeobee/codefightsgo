@@ -23,7 +23,8 @@ func TestProgramTranslation(t *testing.T) {
 		actual = programTranslation(test.s, test.a)
 
 		if actual != test.x {
-			t.Errorf("programTranslation(%v, %v) = %v; expected %v", test.s, test.a, actual, test.x)
+			// t.Errorf("programTranslation(%v, %v) = \n%v; expected \n%v", test.s, test.a, actual, test.x)
+			t.Errorf("\nGot\n%v\nExpected\n%v", actual, test.x)
 		}
 	}
 }
