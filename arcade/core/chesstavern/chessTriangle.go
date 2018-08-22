@@ -1,7 +1,6 @@
 package chesstavern
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -30,9 +29,6 @@ func chessTriangle(rows, cols int) int {
 
 	for row := 0; row < rows; row++ {
 		for col := 0; col < cols; col++ {
-
-			fmt.Println(row, col, calculateTriangles(row, col), "triangles")
-
 			totalTriangles += calculateTriangles(row, col)
 		}
 	}
